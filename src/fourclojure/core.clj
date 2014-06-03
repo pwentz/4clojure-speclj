@@ -1,6 +1,29 @@
 (ns fourclojure.core)
 
-(defn fifty-four [size coll])
+(def one true)
+
+(def two 4)
+
+(def three "HELLO WORLD")
+
+(def four (list :a :b :c))
+
+(def five '(1 2 3 4))
+
+(def six [:a :b :c])
+
+(def seven [1 2 3 4])
+
+(defn twenty-one [coll n]
+  (nth coll n))
+
+(defn fifty-four [size coll]
+  (loop [ret [] rest coll]
+    (if (>= (count rest) size)
+      (recur
+        (conj ret (take size rest))
+        (drop size rest))
+      ret)))
 
 (defn sixty-nine [f & maps]
   (reduce
