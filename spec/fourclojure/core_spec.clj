@@ -2,12 +2,13 @@
   (:require [speclj.core :refer :all]
             [fourclojure.core :refer :all]))
 
-(defn throw-restricted [restriction]
-  (fn [& args]
-    (-fail (format "%s is not allowed." "Function"))))
+(defn build-redefs [redefs fn-name]
+  (concat redefs [fn-name
+                  `(fn [& args#]
+                    (-fail (format "%s is not allowed." ~(str fn-name))))]))
 
 (defmacro with-restrictions [fns & body]
-  (let [redefs (reduce #(concat %1 [%2 (throw-restricted %2)]) [] fns)]
+  (let [redefs (reduce build-redefs [] fns)]
     `(with-redefs ~redefs
        ~@body)))
 
