@@ -1,1 +1,25 @@
-# fourclojure
+# four-clojure
+
+Problems from [4clojure](https://www.4clojure.com/), tested with [Speclj](http://speclj.com/).
+
+For when you want to do some 4clojure problems, but don't want to write the code in the browser.
+
+## Adding a problem
+
+If the problem you want to solve isn't tested in ```fourclojure.core-spec``` yet:
+
+* Find the problem on 4clojure
+* Add the spec to ```fourclojure.core-spec```, using the number as the ```describe```
+  and the description as the ```it```
+* Add any restricted functions using ```with-restrictions```
+* Add the assertions as the ```should```(s), replacing the underscores with a function named as the problem number
+
+## Solving a problem
+
+* Delete everything in ```fourclojure.core``` if you want to start from scratch
+* Add your function to ```fourclojure.core```
+* Run the specs
+
+```bash
+$ lein spec -a
+```
