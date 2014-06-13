@@ -1,0 +1,5 @@
+#!/bin/bash
+
+rm -i src/fourclojure/core.clj
+
+echo "(ns fourclojure.core)" > src/fourclojure/core.clj
