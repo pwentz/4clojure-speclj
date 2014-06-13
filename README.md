@@ -12,6 +12,7 @@ If the problem you want to solve isn't tested in ```fourclojure.core-spec``` yet
 * Add the spec to ```fourclojure.core-spec```, using the number as the ```describe```
   and the description as the ```it```
 * Add any restricted functions using ```with-restrictions```
+  (Note: functions with ```:inline``` meta, like ```nth```, can't be redeffed, so ```with-restrictions``` may not always work)
 * Add the assertions as the ```should```(s), replacing the underscores with a function named as the problem number
 
 ## Solving a problem

@@ -15,7 +15,10 @@
 (def seven [1 2 3 4])
 
 (defn twenty-one [coll n]
-  (nth coll n))
+  (loop [left coll i 0]
+    (if (= i n)
+      (first left)
+      (recur (rest left) (inc i)))))
 
 (defn fifty-four [size coll]
   (loop [ret [] rest coll]
@@ -24,6 +27,10 @@
         (conj ret (take size rest))
         (drop size rest))
       ret)))
+
+(defn sixty
+  ([f coll])
+  ([f init coll]))
 
 (defn sixty-nine [f & maps]
   (reduce

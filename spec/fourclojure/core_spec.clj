@@ -84,6 +84,26 @@
         '((0 1 2) (3 4 5))
         (fifty-four 3 (range 8))))))
 
+(describe "#60"
+  (it "Write a function which behaves like reduce, but returns each intermediate value
+       of the reduction. Your function must accept either two or three arguments, and
+       the return sequence must be lazy."
+
+    (with-restrictions [reductions]
+
+      (should=
+        [0 1 3 6 10]
+        (take 5 (sixty + (range))))
+
+      (should=
+        [[1] [1 2] [1 2 3] [1 2 3 4]]
+        (sixty conj [1] [2 3 4]))
+
+      (should=
+        (reduce * 2 [3 4 5])
+        120
+        (last (sixty * 2 [3 4 5]))))))
+
 (describe "#69"
   (it "Write a function which takes a function f and a variable number of maps.
        Your function should return a map that consists of the rest of the maps
