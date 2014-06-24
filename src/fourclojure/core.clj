@@ -14,6 +14,14 @@
 
 (def seven [1 2 3 4])
 
+(defn twenty [coll]
+  (nth coll (- (count coll) 2)))
+
+(defn forty [x coll]
+  (drop-last
+    (reduce
+      (fn [new y] (apply conj new [y x])) [] coll)))
+
 (defn twenty-one [coll n]
   (loop [left coll i 0]
     (if (= i n)
@@ -29,8 +37,16 @@
       ret)))
 
 (defn sixty
-  ([f coll])
-  ([f init coll]))
+  ([f coll]
+    (lazy-seq
+      (if (seq coll)
+        (sixty f (first coll) (rest coll))
+        [(f)])))
+  ([f init coll]
+    (cons init
+      (lazy-seq
+        (when (seq coll)
+          (sixty f (f init (first coll)) (rest coll)))))))
 
 (defn sixty-nine [f & maps]
   (reduce
@@ -46,4 +62,18 @@
         (keys map)))
     {}
     maps))
+
+(defn seventy [sentence]
+  (let [words (-> sentence
+                (clojure.string/replace #"[\.!]" "")
+                (clojure.string/split #"\s"))]
+    (sort-by clojure.string/lower-case words)))
+
+(defn eighty [n]
+  (let [divisors (filter #(zero? (mod n %)) (range 1 n))
+        sum (apply + divisors)]
+    (= sum n)))
+
+(defn eighty-five [s]
+  (apply clojure.set/union #{s} (map #(eighty-five (disj s %)) s)))
 

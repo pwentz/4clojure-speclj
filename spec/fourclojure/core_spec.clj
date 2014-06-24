@@ -56,6 +56,13 @@
     (should= (conj [1 2 3] 4) seven)
     (should= (conj [1 2] 3 4) seven)))
 
+(describe "#20"
+  (it "Write a function which returns the second to last element from a sequence."
+
+    (should= 4 (twenty (list 1 2 3 4 5)))
+    (should= "b" (twenty ["a" "b" "c"]))
+    (should= [1 2] (twenty [[1 2] [3 4]]))))
+
 (describe "#21"
   (it "Write a function which returns the Nth element from a sequence."
 
@@ -65,6 +72,15 @@
       (should= :a (twenty-one [:a :b :c] 0))
       (should= 2 (twenty-one [1 2 3 4] 1))
       (should= [5 6] (twenty-one '([1 2] [3 4] [5 6]) 2)))))
+
+(describe "#40"
+  (it "Write a function which separates the items of a sequence by an arbitrary value."
+
+    (with-restrictions [interpose]
+
+      (should= [1 0 2 0 3] (forty 0 [1 2 3]))
+      (should= "one, two, three" (apply str (forty ", " ["one" "two" "three"])))
+      (should= [:a :z :b :z :c :z :d] (forty :z [:a :b :c :d])))))
 
 (describe "#54"
   (it "Write a function which returns a sequence of lists of x items each. Lists
@@ -124,3 +140,33 @@
       (should=
         {:a [3 4 5], :b [6 7], :c [8 9]}
         (sixty-nine concat {:a [3], :b [6]} {:a [4 5], :c [8 9]} {:b [7]})))))
+
+(describe "#70"
+  (it "Write a function that splits a sentence up into a sorted list of words.
+       Capitalization should not affect sort order and punctuation should be ignored."
+
+    (should= ["a" "day" "Have" "nice"] (seventy "Have a nice day."))
+    (should= ["a" "Clojure" "fun" "is" "language"] (seventy "Clojure is a fun language!"))
+    (should= ["fall" "follies" "foolish" "Fools" "for"] (seventy "Fools fall for foolish follies."))))
+
+(describe "#80"
+  (it "A number is 'perfect' if the sum of its divisors equal the number itself. 6 is a
+       perfect number because 1+2+3=6. Write a function which returns true for perfect numbers
+       and false otherwise."
+
+    (should= true (eighty 6))
+    (should= false (eighty 7))
+    (should= true (eighty 496))
+    (should= false (eighty 500))
+    (should= true (eighty 8128))))
+
+(describe "#85"
+  (it "Write a function which generates the power set of a given set. The power set of a
+       set x is the set of all subsets of x, including the empty set and x itself."
+
+    (should= #{#{1 :a} #{:a} #{} #{1}} (eighty-five #{1 :a}))
+    (should= #{#{}} (eighty-five #{}))
+    (should= #{#{} #{1} #{2} #{3} #{1 2} #{1 3} #{2 3} #{1 2 3}} (eighty-five #{1 2 3}))
+    ;(should= 1024 (count (eighty-five (into #{} (range 10)))))
+))
+
