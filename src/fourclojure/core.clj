@@ -69,6 +69,64 @@
                 (clojure.string/split #"\s"))]
     (sort-by clojure.string/lower-case words)))
 
+(def seventy-one last)
+
+(defn seventy-two [xs] (apply + xs))
+
+(defn seventy-three [board]
+  (let [rows board
+        cols [(map first board) (map second board) (map last board)]
+        diag1 (map-indexed #(nth %2 %1) board)
+        diag2 (map-indexed #(nth %2 %1) (reverse board))
+        lines (concat [diag1 diag2] cols rows)]
+    (->> lines
+         (filter #(= (count (set %)) 1))
+         (filter #(not= #{:e} (set %)))
+         (first)
+         (first))))
+
+(defn seventy-five [x]
+  (letfn [(gcd [y]
+    (reduce
+      (fn [gc n]
+        (if (and (= (mod x n) 0)
+                 (= (mod y n) 0))
+          n
+          gc))
+      1
+      (range 1 x)))]
+    (->> (range 1 (inc x))
+         (filter #(= (gcd %) 1))
+         count)))
+
+(def seventy-six [1 3 5 7 9 11])
+
+(defn seventy-seven [words]
+  (letfn [(get-memo [word] (sort (clojure.string/split word #"")))]
+    (->> (reduce
+           (fn [anagrams word]
+             (let [memo (get-memo word)]
+               (if (anagrams memo)
+                 (update-in anagrams [memo] #(conj % word))
+                 (assoc anagrams memo #{word}))))
+          {}
+          words)
+         vals
+         (filter #(< 1 (count %)))
+         set)))
+
+(defn seventy-eight
+  ([fn & args]
+    (let [ret (apply fn args)]
+      (if (fn? ret)
+        (seventy-eight ret)
+        ret)))
+  ([fn]
+    (let [ret (fn)]
+      (if (fn? ret)
+        (recur ret)
+        ret))))
+
 (defn eighty [n]
   (let [divisors (filter #(zero? (mod n %)) (range 1 n))
         sum (apply + divisors)]

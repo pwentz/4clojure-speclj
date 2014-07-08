@@ -149,6 +149,139 @@
     (should= ["a" "Clojure" "fun" "is" "language"] (seventy "Clojure is a fun language!"))
     (should= ["fall" "follies" "foolish" "Fools" "for"] (seventy "Fools fall for foolish follies."))))
 
+(describe "#71"
+  (it "The -> macro threads an expression x through a variable number of forms.
+       First, x is inserted as the second item in the first form, making a list of it if
+       it is not a list already. Then the first form is inserted as the second item in the
+       second form, making a list of that form if necessary. This process continues for all
+       the forms. Using -> can sometimes make your code more readable."
+
+    (should=
+      5
+      (seventy-one (sort (rest (reverse [2 5 4 1 3 6]))))
+      (-> [2 5 4 1 3 6]
+          (reverse)
+          (rest)
+          (sort)
+          (seventy-one)))))
+
+(describe "#72"
+  (it "The ->> macro threads an expression x through a variable number of forms. First,
+       x is inserted as the last item in the first form, making a list of it if it is not
+       a list already. Then the first form is inserted as the last item in the second form,
+       making a list of that form if necessary. This process continues for all the forms.
+       Using ->> can sometimes make your code more readable."
+
+    (should=
+      11
+      (seventy-two (map inc (take 3 (drop 2 [2 5 4 1 3 6]))))
+      (->> [2 5 4 1 3 6]
+           (drop 2)
+           (take 3)
+           (map inc)
+           (seventy-two)))))
+
+(describe "#73"
+  (it "A tic-tac-toe board is represented by a two dimensional vector. X is represented
+       by :x, O is represented by :o, and empty is represented by :e. A player wins by
+       placing three Xs or three Os in a horizontal, vertical, or diagonal row. Write
+       a function which analyzes a tic-tac-toe board and returns :x if X has won, :o if
+       O has won, and nil if neither player has won."
+
+    (should=
+      nil
+      (seventy-three [[:e :e :e]
+                      [:e :e :e]
+                      [:e :e :e]]))
+    (should=
+      :x
+      (seventy-three [[:x :e :o]
+                      [:x :e :e]
+                      [:x :e :o]]))
+    (should=
+      :o
+      (seventy-three [[:e :x :e]
+                      [:o :o :o]
+                      [:x :e :x]]))
+    (should=
+      nil
+      (seventy-three [[:x :e :o]
+                      [:x :x :e]
+                      [:o :x :o]]))
+    (should=
+      :x
+      (seventy-three [[:x :e :e]
+                      [:o :x :e]
+                      [:o :e :x]]))
+    (should=
+      :o
+      (seventy-three [[:x :e :o]
+                      [:x :o :e]
+                      [:o :e :x]]))
+    (should=
+      nil
+      (seventy-three [[:x :o :x]
+                      [:x :o :x]
+                      [:o :x :o]]))))
+
+
+(describe "#75"
+  (it "Two numbers are coprime if their greatest common divisor equals 1.
+       Euler's totient function f(x) is defined as the number of positive integers
+       less than x which are coprime to x. The special case f(1) equals 1. Write a function which
+       calculates Euler's totient function."
+
+    (should= 1 (seventy-five 1))
+    (should= (count '(1 3 7 9)) 4 (seventy-five 10))
+    (should= 16 (seventy-five 40))
+    (should= 60 (seventy-five 99))))
+
+(describe "#76"
+  (it "The trampoline function takes a function f and a variable number of parameters.
+       Trampoline calls f with any parameters that were supplied. If f returns a function,
+       trampoline calls that function with no arguments. This is repeated, until the return
+       value is not a function, and then trampoline returns that non-function value. This is
+       useful for implementing mutually recursive algorithms in a way that won't consume the stack."
+
+    (should=
+     (letfn
+       [(foo [x y] #(bar (conj x y) y))
+        (bar [x y] (if (> (last x) 10)
+                     x
+                     #(foo x (+ 2 y))))]
+       (trampoline foo [] 1))
+      seventy-six)))
+
+(describe "#77"
+  (it "Write a function which finds all the anagrams in a vector of words. A word x is an
+       anagram of word y if all the letters in x can be rearranged in a different order to
+       form y. Your function should return a set of sets, where each sub-set is a group of
+       words which are anagrams of each other. Each sub-set should have at least two words.
+       Words without any anagrams should not be included in the result."
+
+    (should=
+      #{#{"meat" "team" "mate"}}
+      (seventy-seven ["meat" "mat" "team" "mate" "eat"]))
+    (should=
+      #{#{"veer" "ever"} #{"lake" "kale"} #{"mite" "item"}}
+      (seventy-seven ["veer" "lake" "item" "kale" "mite" "ever"]))))
+
+(describe "#78"
+  (it "Reimplement the function described in 76"
+
+    (with-restrictions [trampoline]
+
+      (should= 82
+        (letfn [(triple [x] #(sub-two (* 3 x)))
+                (sub-two [x] #(stop? (- x 2)))
+                (stop? [x] (if (> x 50) x #(triple x)))]
+          (seventy-eight triple 2)))
+
+      (should= [true false true false true false]
+        (letfn [(my-even? [x] (if (zero? x) true #(my-odd? (dec x))))
+                (my-odd? [x] (if (zero? x) false #(my-even? (dec x))))]
+          (map (partial seventy-eight my-even?) (range 6)))))))
+
 (describe "#80"
   (it "A number is 'perfect' if the sum of its divisors equal the number itself. 6 is a
        perfect number because 1+2+3=6. Write a function which returns true for perfect numbers
