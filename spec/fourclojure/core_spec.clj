@@ -56,6 +56,92 @@
     (should= (conj [1 2 3] 4) seven)
     (should= (conj [1 2] 3 4) seven)))
 
+(describe "#8"
+  (it "Sets are collections of unique values."
+
+    (should= (set '(:a :a :b :c :c :c :c :d :d)) eight)
+    (should= (clojure.set/union #{:a :b :c} #{:b :c :d}) eight)))
+
+(describe "#9"
+  (it "When operating on a set, the conj function returns a new set
+       with one or more keys 'added'."
+
+    (should= #{1 2 3 4} (conj #{1 4 3} nine))))
+
+(describe "#10"
+  (it "Maps store key-value pairs. Both maps and keywords can be used
+       as lookup functions. Commas can be used to make maps more readable,
+       but they are not required."
+
+    (should= ((hash-map :a 10, :b 20, :c 30) :b) ten)
+    (should= (:b {:a 10, :b 20, :c 30}) ten)))
+
+(describe "#11"
+  (it "When operating on a map, the conj function returns a new map with
+       one or more key-value pairs 'added'."
+
+    (should= {:a 1, :b 2, :c 3} (conj {:a 1} eleven [:c 3]))))
+
+(describe "#12"
+  (it "All Clojure collections support sequencing. You can operate on
+       sequences with functions like first, second, and last."
+
+    (should= (first '(3 2 1)) twelve)
+    (should= (second [2 3 4]) twelve)
+    (should= (last (list 1 2 3)) twelve)))
+
+(describe "#13"
+  (it "The rest function will return all the items of a sequence except the first."
+
+    (should= (rest [10 20 30 40]) thirteen)))
+
+(describe "#14"
+  (it "Clojure has many different ways to create functions."
+
+    (should= ((fn add-five [x] (+ x 5)) 3) fourteen)
+    (should= ((fn [x] (+ x 5)) 3) fourteen)
+    (should= (#(+ % 5) 3) fourteen)
+    (should= ((partial + 5) 3) fourteen)))
+
+(describe "#15"
+  (it "Write a function which doubles a number."
+
+    (should= 4 (fifteen 2))
+    (should= 6 (fifteen 3))
+    (should= 22 (fifteen 11))
+    (should= 14 (fifteen 7))))
+
+(describe "#16"
+  (it "Write a function which returns a personalized greeting."
+
+    (should= "Hello, Dave!" (sixteen "Dave"))
+    (should= "Hello, Jenn!" (sixteen "Jenn"))
+    (should= "Hello, Rhea!" (sixteen "Rhea"))))
+
+(describe "#17"
+  (it "The map function takes two arguments: a function (f) and a sequence (s).
+       Map returns a new sequence consisting of the result of applying f to each
+       item of s. Do not confuse the map function with the map data structure."
+
+    (should= (map #(+ % 5) '(1 2 3)) seventeen)))
+
+(describe "#18"
+  (it "The filter function takes two arguments: a predicate function (f) and
+       a sequence (s). Filter returns a new sequence consisting of all the items
+       of s for which (f item) returns true."
+
+    (should= (filter #(> % 5) '(3 4 5 6 7)) eighteen)))
+
+(describe "#19"
+  (it "Write a function which returns the last element in a sequence."
+
+    (with-restrictions [last]
+
+      (should= 5 (nineteen [1 2 3 4 5]))
+      (should= 3 (nineteen '(5 4 3)))
+      (should= "d" (nineteen ["b" "c" "d"])))))
+
+
 (describe "#20"
   (it "Write a function which returns the second to last element from a sequence."
 
@@ -72,6 +158,76 @@
       (should= :a (twenty-one [:a :b :c] 0))
       (should= 2 (twenty-one [1 2 3 4] 1))
       (should= [5 6] (twenty-one '([1 2] [3 4] [5 6]) 2)))))
+
+(describe "#22"
+  (it "Write a function which returns the total number of elements in a sequence."
+
+    (with-restrictions [count]
+
+      (should= 5 (twenty-two '(1 2 3 3 1)))
+      (should= 11 (twenty-two "Hello World"))
+      (should= 3 (twenty-two [[1 2] [3 4] [5 6]]))
+      (should= 1 (twenty-two '(13)))
+      (should= 3 (twenty-two '(:a :b :c))))))
+
+(describe "#23"
+  (it "Write a function which reverses a sequence."
+
+    (with-restrictions [reverse rseq]
+
+      (should= [5 4 3 2 1] (twenty-three [1 2 3 4 5]))
+      (should= '(7 5 2) (twenty-three (sorted-set 5 7 2 7)))
+      (should= [[5 6][3 4][1 2]] (twenty-three [[1 2][3 4][5 6]])))))
+
+(describe "#24"
+  (it "Write a function which returns the sum of a sequence of numbers."
+
+    (should= 6 (twenty-four [1 2 3]))
+    (should= 8 (twenty-four (list 0 -2 5 5)))
+    (should= 7 (twenty-four #{4 2 1}))
+    (should= -1 (twenty-four '(0 0 -1)))
+    (should= 14 (twenty-four '(1 10 3)))))
+
+(describe "#25"
+  (it "Write a function which returns only the odd numbers from a sequence."
+
+    (should= '(1 3 5) (twenty-five #{1 2 3 4 5}))
+    (should= '(1) (twenty-five [4 2 1 6]))
+    (should= '(1 1 1 3) (twenty-five [1 1 1 3]))))
+
+(describe "#26"
+  (it "Write a function which returns the first X fibonacci numbers."
+
+    (should= '(1 1 2) (twenty-six 3))
+    (should= '(1 1 2 3 5 8) (twenty-six 6))
+    (should= '(1 1 2 3 5 8 13 21) (twenty-six 8))))
+
+(describe "#27"
+  (it "Write a function which returns true if the given sequence is a palindrome.
+       Hint: 'racecar' does not equal '(r a c e c a r)"
+
+    (should= false (twenty-seven '(1 2 3 4 5)))
+    (should= true (twenty-seven "racecar"))
+    (should= true (twenty-seven [:foo :bar :foo]))
+    (should= true (twenty-seven '(1 1 3 3 1 1)))
+    (should= false (twenty-seven '(:a :b :c)))))
+
+(describe "#28"
+  (it "Write a function which flattens a sequence."
+
+    (with-restrictions [flatten]
+
+      (should= '(1 2 3 4 5 6) (twenty-eight '((1 2) 3 [4 [5 6]])))
+      (should= '("a" "b" "c") (twenty-eight ["a" ["b"] "c"]))
+      (should= '(:a) (twenty-eight '((((:a)))))))))
+
+(describe "#29"
+  (it "Write a function which takes a string and returns a new string containing
+       only the capital letters."
+
+    (should= "HLOWRD" (twenty-nine "HeLlO, WoRlD!"))
+    (should (empty? (twenty-nine "nothing")))
+    (should= "AZ" (twenty-nine "$#A(*&987Zf"))))
 
 (describe "#40"
   (it "Write a function which separates the items of a sequence by an arbitrary value."
@@ -224,6 +380,12 @@
                       [:x :o :x]
                       [:o :x :o]]))))
 
+(describe "#74"
+  (it "Given a string of comma separated integers, write a function which returns a new
+       comma separated string that only contains the numbers which are perfect squares."
+
+    (should= "4,9" (seventy-four "4,5,6,7,8,9"))
+    (should= "16,25,36" (seventy-four "15,16,25,36,37"))))
 
 (describe "#75"
   (it "Two numbers are coprime if their greatest common divisor equals 1.
@@ -281,6 +443,25 @@
         (letfn [(my-even? [x] (if (zero? x) true #(my-odd? (dec x))))
                 (my-odd? [x] (if (zero? x) false #(my-even? (dec x))))]
           (map (partial seventy-eight my-even?) (range 6)))))))
+
+(describe "#79"
+  (it "Write a function which calculates the sum of the minimal path through a triangle.
+       The triangle is represented as a collection of vectors. The path should start at
+       the top of the triangle and move to an adjacent number on the next row until the
+       bottom of the triangle is reached."
+
+    (should= 7
+      (seventy-nine '([1]
+                     [2 4]
+                    [5 1 4]
+                   [2 3 4 5]))) ; 1->2->1->3
+    (should= 20
+      (seventy-nine '([3]
+                     [2 4]
+                    [1 9 3]
+                   [9 9 2 4]
+                  [4 6 6 7 8]
+                 [5 7 3 5 1 4]))))) ; 3->4->3->2->7->1
 
 (describe "#80"
   (it "A number is 'perfect' if the sum of its divisors equal the number itself. 6 is a

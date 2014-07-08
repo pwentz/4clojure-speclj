@@ -14,19 +14,90 @@
 
 (def seven [1 2 3 4])
 
+(def eight #{:a :b :c :d})
+
+(def nine 2)
+
+(def ten 20)
+
+(def eleven [:b 2])
+
+(def twelve 3)
+
+(def thirteen [20 30 40])
+
+(def fourteen 8)
+
+(defn fifteen [x]
+  (* 2 x))
+
+(defn sixteen [name]
+  (format "Hello, %s!" name))
+
+(def seventeen [6 7 8])
+
+(def eighteen [6 7])
+
+(defn nineteen [coll]
+  (if-let [the-rest (next coll)]
+    (recur the-rest)
+    (first coll)))
+
 (defn twenty [coll]
   (nth coll (- (count coll) 2)))
-
-(defn forty [x coll]
-  (drop-last
-    (reduce
-      (fn [new y] (apply conj new [y x])) [] coll)))
 
 (defn twenty-one [coll n]
   (loop [left coll i 0]
     (if (= i n)
       (first left)
       (recur (rest left) (inc i)))))
+
+(defn twenty-two [x]
+  (loop [c 1 y x]
+    (if-let [n (next y)]
+      (recur (inc c) n)
+      c)))
+
+(defn twenty-three [coll]
+  (reduce
+    (fn [reversed x]
+      (cons x reversed))
+    []
+    coll))
+
+(defn twenty-four [coll]
+  (apply + coll))
+
+(defn twenty-five [coll]
+  (filter odd? coll))
+
+(defn twenty-six [n]
+  (letfn [(fib [x y]
+            (cons x
+              (lazy-seq
+                (fib y (+ x y)))))]
+    (take n
+      (fib 1 1))))
+
+(defn twenty-seven [coll]
+  (= (seq coll) (reverse coll)))
+
+(defn twenty-eight [coll]
+  (reduce
+    (fn [flat s]
+      (if (coll? s)
+        (concat flat (twenty-eight s))
+        (concat flat [s])))
+    []
+    coll))
+
+(defn twenty-nine [s]
+  (clojure.string/replace s #"[^A-Z]" ""))
+
+(defn forty [x coll]
+  (drop-last
+    (reduce
+      (fn [new y] (apply conj new [y x])) [] coll)))
 
 (defn fifty-four [size coll]
   (loop [ret [] rest coll]
@@ -85,6 +156,13 @@
          (first)
          (first))))
 
+(defn seventy-four [string]
+  (let [nums (->> (clojure.string/split string #",")
+                  (map #(Integer. %)))
+        square? (fn [x] (some #(= x (* % %)) (range 1 (inc x))))]
+    (->> (filter square? nums)
+         (clojure.string/join ","))))
+
 (defn seventy-five [x]
   (letfn [(gcd [y]
     (reduce
@@ -126,6 +204,17 @@
       (if (fn? ret)
         (recur ret)
         ret))))
+
+(defn seventy-nine
+  ([triangle]
+    (seventy-nine triangle 0))
+  ([triangle score]
+    (let [root (+ score (first (first triangle)))
+          left (map drop-last (rest triangle))
+          right (map #(drop 1 %) (rest triangle))]
+      (if (next triangle)
+        (min (seventy-nine left root) (seventy-nine right root))
+        root))))
 
 (defn eighty [n]
   (let [divisors (filter #(zero? (mod n %)) (range 1 n))
