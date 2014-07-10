@@ -229,6 +229,89 @@
     (should (empty? (twenty-nine "nothing")))
     (should= "AZ" (twenty-nine "$#A(*&987Zf"))))
 
+(describe "#30"
+  (it "Write a function which removes consecutive duplicates from a sequence."
+
+    (should= "Leroy" (apply str (thirty "Leeeeeerrroyyy")))
+    (should= '(1 2 3 2 3) (thirty [1 1 2 3 3 2 2 3]))
+    (should= '([1 2] [3 4] [1 2]) (thirty [[1 2] [1 2] [3 4] [1 2]]))))
+
+(describe "#31"
+  (it "Write a function which packs consecutive duplicates into sub-lists."
+
+    (should= '((1 1) (2) (1 1 1) (3 3)) (thirty-one [1 1 2 1 1 1 3 3]))
+    (should= '((:a :a) (:b :b) (:c)) (thirty-one [:a :a :b :b :c]))
+    (should= '(([1 2] [1 2]) ([3 4])) (thirty-one [[1 2] [1 2] [3 4]]))))
+
+(describe "#32"
+  (it "Write a function which duplicates each element of a sequence."
+
+    (should= '(1 1 2 2 3 3) (thirty-two [1 2 3]))
+    (should= '(:a :a :a :a :b :b :b :b) (thirty-two [:a :a :b :b]))
+    (should= '([1 2] [1 2] [3 4] [3 4]) (thirty-two [[1 2] [3 4]]))
+    (should= '([1 2] [1 2] [3 4] [3 4]) (thirty-two [[1 2] [3 4]]))))
+
+(describe "#33"
+  (it "Write a function which replicates each element of a sequence a variable number of times."
+
+    (should= '(1 1 2 2 3 3) (thirty-three [1 2 3] 2))
+    (should= '(:a :a :a :a :b :b :b :b) (thirty-three [:a :b] 4))
+    (should= '(4 5 6) (thirty-three [4 5 6] 1))
+    (should= '([1 2] [1 2] [3 4] [3 4]) (thirty-three [[1 2] [3 4]] 2))
+    (should= [44 44 33 33] (thirty-three [44 33] 2))))
+
+(describe "#34"
+  (it "Write a function which creates a list of all integers in a given range."
+
+    (with-restrictions [range]
+
+      (should= '(1 2 3) (thirty-four 1 4))
+      (should= '(-2 -1 0 1) (thirty-four -2 2))
+      (should= '(5 6 7) (thirty-four 5 8)))))
+
+(describe "#35"
+  (it "Clojure lets you give local names to values using the special let-form."
+
+    (should= (let [x 5] (+ 2 x)) thirty-five)
+    (should= (let [x 3 y 10] (- y x)) thirty-five)
+    (should= (let [x 21] (let [y 3] (/ x y))) thirty-five)))
+
+(describe "#36"
+  (it "Can you bind x, y, and z so that these are all true?"
+
+    (let [x (thirty-six 0)
+          y (thirty-six 1)
+          z (thirty-six 2)]
+
+      (should= 10 (+ x y))
+      (should= 4 (+ y z))
+      (should= 1 z))))
+
+(describe "#37"
+  (it "Regex patterns are supported with a special reader macro."
+
+    (should= (apply str (re-seq #"[A-Z]+" "bA1B3Ce ")) thirty-seven)))
+
+(describe "#38"
+  (it "Write a function which takes a variable number of parameters and returns the maximum value."
+
+    (with-restrictions [max max-key]
+
+      (should= 8 (thirty-eight 1 8 3 4))
+      (should= 30 (thirty-eight 30 20))
+      (should= 67 (thirty-eight 45 67 11)))))
+
+(describe "#39"
+  (it "Write a function which takes two sequences and returns the first item from each, then
+       the second item from each, then the third, etc."
+
+    (with-restrictions [interleave]
+
+      (should= '(1 :a 2 :b 3 :c) (thirty-nine [1 2 3] [:a :b :c]))
+      (should= '(1 3 2 4) (thirty-nine [1 2] [3 4 5 6]))
+      (should= [1 5] (thirty-nine [1 2 3 4] [5]))
+      (should= [30 25 20 15] (thirty-nine [30 20] [25 15])))))
+
 (describe "#40"
   (it "Write a function which separates the items of a sequence by an arbitrary value."
 
@@ -237,6 +320,90 @@
       (should= [1 0 2 0 3] (forty 0 [1 2 3]))
       (should= "one, two, three" (apply str (forty ", " ["one" "two" "three"])))
       (should= [:a :z :b :z :c :z :d] (forty :z [:a :b :c :d])))))
+
+(describe "#41"
+  (it "Write a function which drops every Nth item from a sequence."
+
+    (should= [1 2 4 5 7 8] (forty-one [1 2 3 4 5 6 7 8] 3))
+    (should= [:a :c :e] (forty-one [:a :b :c :d :e :f] 2))
+    (should= [1 2 3 5 6] (forty-one [1 2 3 4 5 6] 4))))
+
+(describe "#42"
+  (it "Write a function which calculates factorials."
+
+    (should= 1 (forty-two 1))
+    (should= 6 (forty-two 3))
+    (should= 120 (forty-two 5))
+    (should= 40320 (forty-two 8))))
+
+(describe "#43"
+  (it "Write a function which reverses the interleave process into x number of subsequences."
+
+    (should= '((1 3 5) (2 4 6))
+              (forty-three [1 2 3 4 5 6] 2))
+
+    (should= '((0 3 6) (1 4 7) (2 5 8))
+              (forty-three (range 9) 3))
+
+    (should= '((0 5) (1 6) (2 7) (3 8) (4 9))
+              (forty-three (range 10) 5))))
+
+(describe "#44"
+  (it "Write a function which can rotate a sequence in either direction."
+
+    (should= '(3 4 5 1 2) (forty-four 2 [1 2 3 4 5]))
+    (should= '(4 5 1 2 3) (forty-four -2 [1 2 3 4 5]))
+    (should= '(2 3 4 5 1) (forty-four 6 [1 2 3 4 5]))
+    (should= '(:b :c :a) (forty-four 1 '(:a :b :c)))
+    (should= '(:c :a :b) (forty-four -4 '(:a :b :c)))))
+
+(describe "#45"
+  (it "The iterate function can be used to produce an infinite lazy sequence."
+
+    (should= (take 5 (iterate #(+ 3 %) 1)) forty-five)))
+
+(describe "#46"
+  (it "Write a higher-order function which flips the order of the arguments of an input function."
+
+    (should= 3 ((forty-six nth) 2 [1 2 3 4 5]))
+    (should= true ((forty-six >) 7 8))
+    (should= 4 ((forty-six quot) 2 8))
+    (should= [1 2 3] ((forty-six take) [1 2 3 4 5] 3))))
+
+(describe "#47"
+  (it "The contains? function checks if a KEY is present in a given collection.
+       This often leads beginner clojurians to use it incorrectly with numerically
+       indexed collections like vectors and lists."
+
+    (should (contains? #{4 5 6} forty-seven))
+    (should (contains? [1 1 1 1 1] forty-seven))
+    (should (contains? {4 :a 2 :b} forty-seven))))
+
+(describe "#48"
+  (it "The some function takes a predicate function and a collection. It returns the
+       first logical true value of (predicate x) where x is an item in the collection."
+
+    (should= (some #{2 7 6} [5 6 7 8]) forty-eight)
+    (should= (some #(when (even? %) %) [5 6 7 8]) forty-eight)))
+
+(describe "#49"
+  (it "Write a function which will split a sequence into two parts."
+
+    (with-restrictions [split-at]
+
+      (should= [[1 2 3] [4 5 6]] (forty-nine 3 [1 2 3 4 5 6]))
+      (should= [[:a] [:b :c :d]] (forty-nine 1 [:a :b :c :d]))
+      (should= [[[1 2] [3 4]] [[5 6]]] (forty-nine 2 [[1 2] [3 4] [5 6]])))))
+
+(describe "#50"
+  (it "Write a function which takes a sequence consisting of items with
+       different types and splits them up into a set of homogeneous sub-sequences.
+       The internal order of each sub-sequence should be maintained, but the sub-sequences
+       themselves can be returned in any order (this is why 'set' is used in the test cases)."
+
+    (should= #{[1 2 3] [:a :b :c]} (set (fifty [1 :a 2 :b 3 :c])))
+    (should= #{[:a :b] ["foo" "bar"]} (set (fifty [:a "foo"  "bar" :b])))
+    (should= #{[[1 2] [3 4]] [:a :b] [5 6]} (set (fifty [[1 2] :a [3 4] 5 6 :b])))))
 
 (describe "#54"
   (it "Write a function which returns a sequence of lists of x items each. Lists

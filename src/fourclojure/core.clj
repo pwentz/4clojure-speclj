@@ -94,18 +94,112 @@
 (defn twenty-nine [s]
   (clojure.string/replace s #"[^A-Z]" ""))
 
+(defn thirty [coll]
+  (reduce
+    (fn [ret x]
+      (if (= (last ret) x)
+        ret
+        (conj ret x)))
+    []
+    (seq coll)))
+
+(defn thirty-one [coll]
+  (reduce
+    (fn [ret x]
+      (let [dups (last ret)]
+        (if (= (last dups) x)
+          (conj (vec (drop-last ret)) (conj dups x))
+          (conj ret [x]))))
+    []
+    coll))
+
+(defn thirty-two [coll]
+  (interleave coll coll))
+
+(defn thirty-three [coll n]
+  (if (> n 1)
+    (apply interleave (repeat n coll))
+    coll))
+
+(defn thirty-four [x y]
+  (if (< x y)
+    (cons x (lazy-seq (thirty-four (inc x) y)))
+    (list)))
+
+(def thirty-five 7)
+
+(def thirty-six [7 3 1])
+
+(def thirty-seven "ABC")
+
+(defn thirty-eight [& args]
+  (reduce #(if (< %1 %2) %2 %1) args))
+
+(defn thirty-nine [a b]
+  (lazy-seq
+    (when (and (seq a) (seq b))
+      (concat [(first a) (first b)]
+        (thirty-nine (rest a) (rest b))))))
+
 (defn forty [x coll]
   (drop-last
     (reduce
       (fn [new y] (apply conj new [y x])) [] coll)))
 
+(defn forty-one [coll n]
+  (lazy-seq
+    (when (seq coll)
+      (concat
+        (take (dec n) coll)
+        (forty-one (drop n coll) n)))))
+
+(defn forty-two [n]
+  (if (= 1 n)
+    1
+    (* n (forty-two (dec n)))))
+
+(defn forty-three [coll n]
+  (take n
+    (lazy-seq
+      (when (seq coll)
+        (cons (take-nth n coll) (forty-three (rest coll) n))))))
+
+(defn forty-four [dir coll]
+  (cond
+    (neg? dir)
+    (recur (inc dir) (concat (take-last 1 coll) (drop-last 1 coll)))
+    (pos? dir)
+    (recur (dec dir) (concat (drop 1 coll) (take 1 coll)))
+    :else
+    coll))
+
+(def forty-five [1 4 7 10 13])
+
+(defn forty-six [f]
+  (fn [a b]
+    (f b a)))
+
+(def forty-seven 4)
+
+(def forty-eight 6)
+
+(defn forty-nine [n coll]
+  [(take n coll) (drop n coll)])
+
+(defn fifty [coll]
+  (vals
+    (reduce
+      (fn [ret x]
+        (update-in ret [(type x)] #(concat % [x])))
+      {}
+      coll)))
+
 (defn fifty-four [size coll]
-  (loop [ret [] rest coll]
-    (if (>= (count rest) size)
-      (recur
-        (conj ret (take size rest))
-        (drop size rest))
-      ret)))
+  (lazy-seq
+    (when (>= (count coll) size)
+      (cons
+        (take size coll)
+        (fifty-four size (drop size coll))))))
 
 (defn sixty
   ([f coll]
