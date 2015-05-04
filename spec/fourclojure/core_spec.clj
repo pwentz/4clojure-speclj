@@ -648,6 +648,16 @@
     (should= #{#{1 :a} #{:a} #{} #{1}} (eighty-five #{1 :a}))
     (should= #{#{}} (eighty-five #{}))
     (should= #{#{} #{1} #{2} #{3} #{1 2} #{1 3} #{2 3} #{1 2 3}} (eighty-five #{1 2 3}))
-    ;(should= 1024 (count (eighty-five (into #{} (range 10)))))
-))
+    #_(should= 1024 (count (eighty-five (into #{} (range 10)))))))
 
+(describe "#86"
+  (it "Happy numbers are positive integers that follow a particular formula:
+       take each individual digit, square it, and then sum the squares
+       to get a new number. Repeat with the new number and eventually,
+       you might get to a number whose squared sum is 1. This is
+       a happy number. An unhappy number (or sad number) is one that loops
+       endlessly. Write a function that determines if a number is happy or not."
+    (should= true (eighty-six 7))
+    (should= true (eighty-six 986543210))
+    (should= false (eighty-six 2))
+    (should= false (eighty-six 3))))

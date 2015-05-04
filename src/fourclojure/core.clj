@@ -318,3 +318,16 @@
 (defn eighty-five [s]
   (apply clojure.set/union #{s} (map #(eighty-five (disj s %)) s)))
 
+(defn- happy [n]
+  (->> (seq (str n))
+    (map #(Integer. (str %)))
+    (map #(* % %))
+    (reduce +)))
+
+(defn eighty-six
+  [n]
+  (case n
+    1 true
+    2 false
+    3 false
+    (recur (happy n))))
