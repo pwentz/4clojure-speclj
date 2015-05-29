@@ -641,6 +641,32 @@
     (should= false (eighty 500))
     (should= true (eighty 8128))))
 
+(describe "#81"
+  (it "Write a function which returns the intersection of two sets.
+       The intersection is the sub-set of items that each set has in common."
+
+    (with-restrictions [clojure.set/intersection]
+
+      (should= #{2 3} (eighty-one #{0 1 2 3} #{2 3 4 5}))
+      (should= #{} (eighty-one #{0 1 2} #{3 4 5}))
+      (should= #{:a :c :d} (eighty-one #{:a :b :c :d} #{:c :e :a :f :d})))))
+
+(describe "#82"
+  (it "A word chain consists of a set of words ordered so that each word differs by
+       only one letter from the words directly before and after it. The one letter
+       difference can be either an insertion, a deletion, or a substitution. Here is an example word chain:
+       cat -> cot -> coat -> oat -> hat -> hot -> hog -> dog
+       Write a function which takes a sequence of words, and returns true if they can be
+       arranged into one continous word chain, and false if they cannot."
+
+    (should (eighty-two? #{"hat" "coat" "dog" "cat" "oat" "cot" "hot" "hog"}))
+    (should-not (eighty-two? #{"cot" "hot" "bat" "fat"}))
+    (should-not (eighty-two? #{"to" "top" "stop" "tops" "toss"}))
+    (should (eighty-two? #{"spout" "do" "pot" "pout" "spot" "dot"}))
+    (should (eighty-two? #{"share" "hares" "shares" "hare" "are"}))
+    (should-not (eighty-two? #{"share" "hares" "hare" "are"}))))
+
+
 (describe "#85"
   (it "Write a function which generates the power set of a given set. The power set of a
        set x is the set of all subsets of x, including the empty set and x itself."

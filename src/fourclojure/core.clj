@@ -315,6 +315,34 @@
         sum (apply + divisors)]
     (= sum n)))
 
+(defn eighty-one [s1 s2]
+  (set (filter #(contains? s2 %) s1)))
+
+(defn- one-diff? [one two]
+  (let [[longest shortest] (sort #(> (count %1) (count %2)) [one two])
+        diff (- (count longest) (count shortest))]
+    (case diff
+      1 (re-find (re-pattern shortest) longest)
+      0 (= 1 (count (clojure.set/difference (set (seq longest)) (set (seq shortest)))))
+      false)))
+
+(defn- try-chain
+  ([words]
+   (map #(try-chain words %) (map vector words)))
+  ([words chain]
+   (let [word (last chain)
+         others (filter #(not= word %) words)
+         links (filter #(one-diff? word %) others)
+         chains (map #(conj chain %) links)]
+     (if (seq links)
+       (->> (map #(try-chain others %) chains)
+            (sort #(> (count %1) (count %2)))
+            first)
+       chain))))
+
+(defn eighty-two? [words]
+  (some #(= (count words) (count %)) (try-chain words)))
+
 (defn eighty-five [s]
   (apply clojure.set/union #{s} (map #(eighty-five (disj s %)) s)))
 
