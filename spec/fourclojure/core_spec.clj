@@ -687,3 +687,13 @@
     (should= true (eighty-six 986543210))
     (should= false (eighty-six 2))
     (should= false (eighty-six 3))))
+
+(describe "#105"
+  (it "Given an input sequence of keywords and numbers, create a map such that
+      each key in the map is a keyword, and the value is a sequence of all the
+      numbers (if any) between it and the next keyword in the sequence."
+
+    (should= {} (one-hundred-five []))
+    (should= {:a [1]} (one-hundred-five [:a 1]))
+    (should= {:a [1], :b [2]} (one-hundred-five [:a 1, :b 2]))
+    (should= {:a [1 2 3], :b [], :c [4]} (one-hundred-five [:a 1 2 3 :b :c 4]))))

@@ -359,3 +359,16 @@
     2 false
     3 false
     (recur (happy n))))
+
+(defn one-hundred-five
+  [coll]
+  (into {}
+    (reduce
+      (fn [[now & done :as m] x]
+        (if (keyword? x)
+          (conj m [x []])
+          (conj
+            done
+            [(first now) (conj (last now) x)])))
+      (list)
+      coll)))

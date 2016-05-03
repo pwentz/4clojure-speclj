@@ -17,7 +17,7 @@ If the problem you want to solve isn't tested in ```fourclojure.core-spec``` yet
 
 ## Solving a problem
 
-* ```$ ./script/restart``` if you want to start from scratch
+* ```$ script/restart``` if you want to start from scratch
 * Add your function to ```fourclojure.core```
 * Run the specs
 
