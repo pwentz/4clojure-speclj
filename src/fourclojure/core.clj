@@ -47,7 +47,7 @@
 (defn twenty-one [coll n]
   (loop [coll coll
          acc 0]
-    (if (= acc n)
+    (if (#{n} acc)
       (first coll)
       (recur (rest coll) (inc acc)))))
 
@@ -67,30 +67,30 @@
 (defn twenty-six [n]
   (loop [n n
          acc [1 1]]
-    (if (= (count acc) n)
+    (if (#{n} (count acc))
       acc
       (recur n (conj acc (+ (last acc) (second (reverse acc))))))))
 
 ; palindrome
 (defn twenty-seven [sequ]
-  (= (apply str sequ) (apply str (reverse sequ))))
+  (let [stringify (partial apply str)]
+    (= ((comp stringify reverse) sequ) (stringify sequ))))
 
 ; flatten array
 (defn flattenize [elt]
   (cond (and (sequential? elt)
-             (>= (count (filter sequential? elt)) 1)) (mapcat flattenize elt)
+             (#{1} ((comp count (partial filter sequential?)) elt))) (mapcat flattenize elt)
         (sequential? elt) elt
         :else [elt]))
 
 ; flatten array
-(defn twenty-eight [coll]
-  (mapcat flattenize coll))
+(def twenty-eight (partial mapcat flattenize))
 
 ; pull caps from string
 (defn twenty-nine [phrase]
-  (apply str (filter #(and (= (clojure.string/upper-case %) %)
-                           (not (= (clojure.string/upper-case %)
-                                   (clojure.string/lower-case %))))
+  (apply str (filter #(and (#{%} (clojure.string/upper-case %))
+                           (not= (clojure.string/upper-case %)
+                                 (clojure.string/lower-case %)))
                      (map str phrase))))
 
 ; remove consecutive duplicates
@@ -98,8 +98,8 @@
 
 ; combine consecutive dupes into sub-list
 (defn shovel-consecs [acc elt]
-  (if (= (last (last acc)) elt)
-    (conj (vec (drop-last acc)) (conj (last acc) elt))
+  (if (#{elt} ((comp last last) acc))
+    (conj ((comp vec drop-last) acc) (conj (last acc) elt))
     (conj acc [elt])))
 
 ; combine consecutive dupes into sub-list
@@ -127,44 +127,35 @@
 
 (def thirty-seven "ABC")
 
-; max number
+; ; max number
 (defn thirty-eight [& numbers]
-  (-> numbers
-      (sort)
-      (last)))
+  ((comp last sort) numbers))
+
 
 ; flat-zip two collections
-(defn thirty-nine [coll1 coll2]
-  (mapcat vector coll1 coll2))
+(def thirty-nine (partial mapcat vector))
 
-; interpose given separator into collection
+; ; interpose given separator into collection
 (defn forty [sep coll]
-  (->> coll
-       (reduce #(conj %1 %2 sep) [])
-       (drop-last)))
+  ((comp drop-last (partial reduce #(conj %1 %2 sep) [])) coll))
+
 
 ; drop every nth item from seq
 (defn forty-one [coll n]
   (keep-indexed #(if (or (zero? %1)
                          (->> n
                               (rem (inc %1))
-                              (zero?)
-                              (not)))
+                              ((complement zero?))))
                    %2) coll))
 
 ; factorial
-(defn forty-two [n]
-  (->> n
-       (inc)
-       (range 1)
-       (reverse)
-       (reduce *)))
+(def forty-two (comp (partial reduce *) reverse (partial range 1) inc))
 
 ; reverse interleave
 (defn forty-three [sequ n]
   (loop [coll (partition n sequ)
         acc []]
-    (if (empty? (flatten coll))
+    (if ((comp empty? flatten) coll)
       acc
       (recur (map rest coll) (->> coll
                                   (map first)
@@ -172,9 +163,7 @@
 
 ; rotate sequence
 (defn rotate [coll]
-  (conj (-> coll
-            (rest)
-            (vec)) (first coll)))
+  (conj ((comp vec rest) coll) (first coll)))
 
 ; rotate a sequence
 (defn reverse-rotate [coll]
@@ -202,30 +191,22 @@
 ; split sequence at n
 (defn forty-nine [n coll]
   (reduce (fn [acc elt]
-             (if (= (nth coll n) elt)
+             (if (#{elt} (nth coll n))
               (conj acc [elt])
-              (conj (-> acc
-                        (drop-last)
-                        (vec)) (conj (last acc) elt))))
+              (conj ((comp vec drop-last) acc) (conj (last acc) elt))))
           [[]] coll))
 
 ; split set by types
-(defn fifty [coll]
-  (vals (group-by type coll)))
+(def fifty (comp vals (partial group-by type)))
 
 ; partition
-
 (defn fifty-four [n coll]
   (->> coll
        (reduce (fn [acc elt]
-                 (if (= (-> acc
-                            (last)
-                            (count)) n)
-                   (conj acc [elt])
-                   (conj (-> acc
-                             (drop-last)
-                             (vec)) (conj (last acc) elt)))) [[]])
-       (filter #(= (count %) n))))
+                 (if ((comp #{n} count last) acc)
+                     (conj acc [elt])
+                     (conj ((comp vec drop-last) acc) (conj (last acc) elt)))) [[]])
+       (filter (comp #{n} count))))
 
 ; intermediate reduce (w/ lazy-seq)
 (defn sixty
@@ -249,9 +230,7 @@
 ; split sentence and sort by words (case-insensitive)
 (defn seventy [phrase]
   (->> (clojure.string/split
-             (->> phrase
-                 (drop-last)
-                 (apply str)) #" ")
+             ((comp (partial apply str) drop-last) phrase) #" ")
        (sort-by clojure.string/lower-case)))
 
 (def seventy-one last)
@@ -260,52 +239,57 @@
 
 ; perfect squares from comma separated integers
 (defn is-sqrt? [n]
-  (let [n (read-string n)]
-    (some #(= (* % %) n) (range n))))
+  (let [n (read-string n)
+        sq (fn [n] (* n n))]
+    (some (comp #{n} sq) (range n))))
 
 ; perfect squares from comma separated integers
-(defn seventy-four [comma-sep-ints]
-  (->> (clojure.string/split comma-sep-ints #",")
-       (filter is-sqrt?)
-       (interpose ",")
-       (apply str)))
+(def seventy-four
+  (comp
+    (partial apply str)
+    (partial interpose ",")
+    (partial filter is-sqrt?)
+    #(clojure.string/split % #",")))
 
 ; Euler's totient
 (defn divisors [n]
   (->> n
        (range 1)
-       (filter #(zero? (mod n %)))
+       (filter (comp zero? (partial mod n)))
        (into #{})))
 
 ; Euler's totient
 (defn greatest-common-divisor [a b]
-  (->> a
-       (divisors)
-       (clojure.set/intersection (divisors b))
-       (last)))
+  ((comp
+     last
+     (partial clojure.set/intersection (divisors b))
+     divisors)
+   a))
+
 
 ; Euler's totient
 (defn seventy-five [n]
   (if (= 1 n)
     1
-    (->> n
-         (range 1)
-         (map (partial greatest-common-divisor n))
-         (filter (partial = 1))
-         (count)
-         (dec))))
+    ((comp
+       dec
+       count
+       (partial filter #{1})
+       (partial map (partial greatest-common-divisor n))
+       (partial range 1))
+     n)))
 
 (def seventy-six [1 3 5 7 9 11])
 
 ; extract all anagrams in vector
-(defn seventy-seven [coll]
+(def seventy-seven
   (letfn [(to-unicode [n] (reduce #(+ (int %1) (int %2)) n))]
-    (->> coll
-         (group-by to-unicode)
-         (vals)
-         (remove #(= 1 (count %)))
-         (map set)
-         (into #{}))))
+    (comp
+      (partial into #{})
+      (partial map set)
+      (partial remove (comp #{1} count))
+      vals
+      (partial group-by to-unicode))))
 
 ; trampoline
 (defn seventy-eight [f & args]
