@@ -28,103 +28,98 @@
 
 (def fourteen 8)
 
-(defn fifteen [x]
-  (* 2 x))
+(def fifteen (partial * 2))
 
-(defn sixteen [name]
-  (format "Hello, %s!" name))
+(defn sixteen [first-name]
+  (str "Hello, " first-name "!"))
 
-(def seventeen [6 7 8])
+(def seventeen '(6 7 8))
 
-(def eighteen [6 7])
+(def eighteen '(6 7))
 
 (defn nineteen [coll]
-  (if-let [the-rest (next coll)]
-    (recur the-rest)
-    (first coll)))
+  (first (reverse coll)))
 
 (defn twenty [coll]
-  (nth coll (- (count coll) 2)))
+  (second (reverse coll)))
 
+; get nth elt
 (defn twenty-one [coll n]
-  (loop [left coll i 0]
-    (if (= i n)
-      (first left)
-      (recur (rest left) (inc i)))))
+  (loop [coll coll
+         acc 0]
+    (if (= acc n)
+      (first coll)
+      (recur (rest coll) (inc acc)))))
 
-(defn twenty-two [x]
-  (loop [c 1 y x]
-    (if-let [n (next y)]
-      (recur (inc c) n)
-      c)))
+; count
+(def twenty-two (partial reduce (fn [a b] (inc a)) 0))
 
-(defn twenty-three [coll]
-  (reduce
-    (fn [reversed x]
-      (cons x reversed))
-    []
-    coll))
+; reverse a seq
+(def twenty-three (partial reduce conj '()))
 
-(defn twenty-four [coll]
-  (apply + coll))
+; sum of sequence
+(def twenty-four (partial reduce +))
 
-(defn twenty-five [coll]
-  (filter odd? coll))
+; odd numbers
+(def twenty-five (partial filter odd?))
 
+; fibonacci
 (defn twenty-six [n]
-  (letfn [(fib [x y]
-            (cons x
-              (lazy-seq
-                (fib y (+ x y)))))]
-    (take n
-      (fib 1 1))))
+  (loop [n n
+         acc [1 1]]
+    (if (= (count acc) n)
+      acc
+      (recur n (conj acc (+ (last acc) (second (reverse acc))))))))
 
-(defn twenty-seven [coll]
-  (= (seq coll) (reverse coll)))
+; palindrome
+(defn twenty-seven [sequ]
+  (= (apply str sequ) (apply str (reverse sequ))))
 
+; flatten array
+(defn flattenize [elt]
+  (cond (and (sequential? elt)
+             (>= (count (filter sequential? elt)) 1)) (mapcat flattenize elt)
+        (sequential? elt) elt
+        :else [elt]))
+
+; flatten array
 (defn twenty-eight [coll]
-  (reduce
-    (fn [flat s]
-      (if (coll? s)
-        (concat flat (twenty-eight s))
-        (concat flat [s])))
-    []
-    coll))
+  (mapcat flattenize coll))
 
-(defn twenty-nine [s]
-  (clojure.string/replace s #"[^A-Z]" ""))
+; pull caps from string
+(defn twenty-nine [phrase]
+  (apply str (filter #(and (= (clojure.string/upper-case %) %)
+                           (not (= (clojure.string/upper-case %)
+                                   (clojure.string/lower-case %))))
+                     (map str phrase))))
 
-(defn thirty [coll]
-  (reduce
-    (fn [ret x]
-      (if (= (last ret) x)
-        ret
-        (conj ret x)))
-    []
-    (seq coll)))
+; remove consecutive duplicates
+(def thirty dedupe)
 
+; combine consecutive dupes into sub-list
+(defn shovel-consecs [acc elt]
+  (if (= (last (last acc)) elt)
+    (conj (vec (drop-last acc)) (conj (last acc) elt))
+    (conj acc [elt])))
+
+; combine consecutive dupes into sub-list
 (defn thirty-one [coll]
-  (reduce
-    (fn [ret x]
-      (let [dups (last ret)]
-        (if (= (last dups) x)
-          (conj (vec (drop-last ret)) (conj dups x))
-          (conj ret [x]))))
-    []
-    coll))
+  (reduce shovel-consecs [] coll))
 
+; duplicate elements
 (defn thirty-two [coll]
-  (interleave coll coll))
+  (reduce #(conj %1 %2 %2) [] coll))
 
+; duplicate elements n times
 (defn thirty-three [coll n]
-  (if (> n 1)
-    (apply interleave (repeat n coll))
-    coll))
+  (reduce #(apply (partial conj %1) (repeat n %2)) [] coll))
 
-(defn thirty-four [x y]
-  (if (< x y)
-    (cons x (lazy-seq (thirty-four (inc x) y)))
-    (list)))
+; list of integers w/in given range
+(defn thirty-four [start end]
+  (loop [acc [start]]
+    (if (= (- end start) (count acc))
+      acc
+      (recur (conj acc (inc (last acc)))))))
 
 (def thirty-five 7)
 
@@ -132,243 +127,215 @@
 
 (def thirty-seven "ABC")
 
-(defn thirty-eight [& args]
-  (reduce #(if (< %1 %2) %2 %1) args))
+; max number
+(defn thirty-eight [& numbers]
+  (-> numbers
+      (sort)
+      (last)))
 
-(defn thirty-nine [a b]
-  (lazy-seq
-    (when (and (seq a) (seq b))
-      (concat [(first a) (first b)]
-        (thirty-nine (rest a) (rest b))))))
+; flat-zip two collections
+(defn thirty-nine [coll1 coll2]
+  (mapcat vector coll1 coll2))
 
-(defn forty [x coll]
-  (drop-last
-    (reduce
-      (fn [new y] (apply conj new [y x])) [] coll)))
+; interpose given separator into collection
+(defn forty [sep coll]
+  (->> coll
+       (reduce #(conj %1 %2 sep) [])
+       (drop-last)))
 
+; drop every nth item from seq
 (defn forty-one [coll n]
-  (lazy-seq
-    (when (seq coll)
-      (concat
-        (take (dec n) coll)
-        (forty-one (drop n coll) n)))))
+  (keep-indexed #(if (or (zero? %1)
+                         (->> n
+                              (rem (inc %1))
+                              (zero?)
+                              (not)))
+                   %2) coll))
 
+; factorial
 (defn forty-two [n]
-  (if (= 1 n)
-    1
-    (* n (forty-two (dec n)))))
+  (->> n
+       (inc)
+       (range 1)
+       (reverse)
+       (reduce *)))
 
-(defn forty-three [coll n]
-  (take n
-    (lazy-seq
-      (when (seq coll)
-        (cons (take-nth n coll) (forty-three (rest coll) n))))))
+; reverse interleave
+(defn forty-three [sequ n]
+  (loop [coll (partition n sequ)
+        acc []]
+    (if (empty? (flatten coll))
+      acc
+      (recur (map rest coll) (->> coll
+                                  (map first)
+                                  (conj acc))))))
 
-(defn forty-four [dir coll]
-  (cond
-    (neg? dir)
-    (recur (inc dir) (concat (take-last 1 coll) (drop-last 1 coll)))
-    (pos? dir)
-    (recur (dec dir) (concat (drop 1 coll) (take 1 coll)))
-    :else
-    coll))
+; rotate sequence
+(defn rotate [coll]
+  (conj (-> coll
+            (rest)
+            (vec)) (first coll)))
 
-(def forty-five [1 4 7 10 13])
+; rotate a sequence
+(defn reverse-rotate [coll]
+  (conj (drop-last coll) (last coll)))
+
+; rotate a sequence
+(defn forty-four [n coll]
+  (let [times (if (pos? n) n (- n))
+        rotator (if (pos? n) rotate reverse-rotate)]
+    (loop [acc coll
+           times times]
+      (if (zero? times)
+        acc
+        (recur (rotator acc) (dec times))))))
+
+(def forty-five '(1 4 7 10 13))
 
 (defn forty-six [f]
-  (fn [a b]
-    (f b a)))
+  (fn [a b] (f b a)))
 
 (def forty-seven 4)
 
 (def forty-eight 6)
 
+; split sequence at n
 (defn forty-nine [n coll]
-  [(take n coll) (drop n coll)])
+  (reduce (fn [acc elt]
+             (if (= (nth coll n) elt)
+              (conj acc [elt])
+              (conj (-> acc
+                        (drop-last)
+                        (vec)) (conj (last acc) elt))))
+          [[]] coll))
 
+; split set by types
 (defn fifty [coll]
-  (vals
-    (reduce
-      (fn [ret x]
-        (update-in ret [(type x)] #(concat % [x])))
-      {}
-      coll)))
+  (vals (group-by type coll)))
 
-(defn fifty-four [size coll]
-  (lazy-seq
-    (when (>= (count coll) size)
-      (cons
-        (take size coll)
-        (fifty-four size (drop size coll))))))
+; partition
 
+(defn fifty-four [n coll]
+  (->> coll
+       (reduce (fn [acc elt]
+                 (if (= (-> acc
+                            (last)
+                            (count)) n)
+                   (conj acc [elt])
+                   (conj (-> acc
+                             (drop-last)
+                             (vec)) (conj (last acc) elt)))) [[]])
+       (filter #(= (count %) n))))
+
+; intermediate reduce (w/ lazy-seq)
 (defn sixty
-  ([f coll]
-    (lazy-seq
-      (if (seq coll)
-        (sixty f (first coll) (rest coll))
-        [(f)])))
-  ([f init coll]
-    (cons init
-      (lazy-seq
-        (when (seq coll)
-          (sixty f (f init (first coll)) (rest coll)))))))
+  ([f acc sequ]
+   (let [filled? (complement empty?)]
+     (cons acc (lazy-seq
+                 (if (filled? sequ)
+                   (sixty f (f acc (first sequ)) (rest sequ)))))))
+  ([f sequ] (sixty f (first sequ) (rest sequ))))
 
-(defn sixty-nine [f & maps]
-  (reduce
-    (fn [memo map]
-      (reduce
-        (fn [new-memo key]
-          (let [old (get memo key)
-                new (get map key)]
-            (if old
-              (assoc new-memo key (f old new))
-              (assoc new-memo key new))))
-        memo
-        (keys map)))
-    {}
-    maps))
+; merge-with
+(defn merge-matching-with [f accumulator elt]
+  (defn merge-accu [acc b]
+    (if (contains? acc b)
+              (assoc acc b (f (acc b) (elt b)))
+              (merge elt acc)))
+  (->> elt
+       (keys)
+       (reduce merge-accu accumulator)))
 
-(defn seventy [sentence]
-  (let [words (-> sentence
-                (clojure.string/replace #"[\.!]" "")
-                (clojure.string/split #"\s"))]
-    (sort-by clojure.string/lower-case words)))
+; split sentence and sort by words (case-insensitive)
+(defn seventy [phrase]
+  (->> (clojure.string/split
+             (->> phrase
+                 (drop-last)
+                 (apply str)) #" ")
+       (sort-by clojure.string/lower-case)))
 
 (def seventy-one last)
 
-(defn seventy-two [xs] (apply + xs))
+(def seventy-two (partial reduce +))
 
-(defn seventy-three [board]
-  (let [rows board
-        cols [(map first board) (map second board) (map last board)]
-        diag1 (map-indexed #(nth %2 %1) board)
-        diag2 (map-indexed #(nth %2 %1) (reverse board))
-        lines (concat [diag1 diag2] cols rows)]
-    (->> lines
-         (filter #(= (count (set %)) 1))
-         (filter #(not= #{:e} (set %)))
-         (first)
-         (first))))
+; perfect squares from comma separated integers
+(defn is-sqrt? [n]
+  (let [n (read-string n)]
+    (some #(= (* % %) n) (range n))))
 
-(defn seventy-four [string]
-  (let [nums (->> (clojure.string/split string #",")
-                  (map #(Integer. %)))
-        square? (fn [x] (some #(= x (* % %)) (range 1 (inc x))))]
-    (->> (filter square? nums)
-         (clojure.string/join ","))))
+; perfect squares from comma separated integers
+(defn seventy-four [comma-sep-ints]
+  (->> (clojure.string/split comma-sep-ints #",")
+       (filter is-sqrt?)
+       (interpose ",")
+       (apply str)))
 
-(defn seventy-five [x]
-  (letfn [(gcd [y]
-    (reduce
-      (fn [gc n]
-        (if (and (= (mod x n) 0)
-                 (= (mod y n) 0))
-          n
-          gc))
-      1
-      (range 1 x)))]
-    (->> (range 1 (inc x))
-         (filter #(= (gcd %) 1))
-         count)))
+; Euler's totient
+(defn divisors [n]
+  (->> n
+       (range 1)
+       (filter #(zero? (mod n %)))
+       (into #{})))
+
+; Euler's totient
+(defn greatest-common-divisor [a b]
+  (->> a
+       (divisors)
+       (clojure.set/intersection (divisors b))
+       (last)))
+
+; Euler's totient
+(defn seventy-five [n]
+  (if (= 1 n)
+    1
+    (->> n
+         (range 1)
+         (map (partial greatest-common-divisor n))
+         (filter (partial = 1))
+         (count)
+         (dec))))
 
 (def seventy-six [1 3 5 7 9 11])
 
-(defn seventy-seven [words]
-  (letfn [(get-memo [word] (sort (clojure.string/split word #"")))]
-    (->> (reduce
-           (fn [anagrams word]
-             (let [memo (get-memo word)]
-               (if (anagrams memo)
-                 (update-in anagrams [memo] #(conj % word))
-                 (assoc anagrams memo #{word}))))
-          {}
-          words)
-         vals
-         (filter #(< 1 (count %)))
-         set)))
+; extract all anagrams in vector
+(defn seventy-seven [coll]
+  (letfn [(to-unicode [n] (reduce #(+ (int %1) (int %2)) n))]
+    (->> coll
+         (group-by to-unicode)
+         (vals)
+         (remove #(= 1 (count %)))
+         (map set)
+         (into #{}))))
 
-(defn seventy-eight
-  ([fn & args]
-    (let [ret (apply fn args)]
-      (if (fn? ret)
-        (seventy-eight ret)
-        ret)))
-  ([fn]
-    (let [ret (fn)]
-      (if (fn? ret)
-        (recur ret)
-        ret))))
+; trampoline
+(defn seventy-eight [f & args]
+  (if-not (fn? f)
+    f
+    (seventy-eight (apply f args))))
 
-(defn seventy-nine
-  ([triangle]
-    (seventy-nine triangle 0))
-  ([triangle score]
-    (let [root (+ score (first (first triangle)))
-          left (map drop-last (rest triangle))
-          right (map #(drop 1 %) (rest triangle))]
-      (if (next triangle)
-        (min (seventy-nine left root) (seventy-nine right root))
-        root))))
-
+; returns true if number is perfect
 (defn eighty [n]
-  (let [divisors (filter #(zero? (mod n %)) (range 1 n))
-        sum (apply + divisors)]
-    (= sum n)))
+  (->> n
+       (divisors)
+       (reduce +)
+       (= n)))
 
-(defn eighty-one [s1 s2]
-  (set (filter #(contains? s2 %) s1)))
+; intersection of 2 sets
+(defn eighty-one [a b]
+  (->> a
+       (filter #(some (partial = %) b))
+       (into #{})))
 
-(defn- one-diff? [one two]
-  (let [[longest shortest] (sort #(> (count %1) (count %2)) [one two])
-        diff (- (count longest) (count shortest))]
-    (case diff
-      1 (re-find (re-pattern shortest) longest)
-      0 (= 1 (count (clojure.set/difference (set (seq longest)) (set (seq shortest)))))
-      false)))
+; create map from keywords in vector
+(defn separate-keywords [acc b]
+  (let [last-key (last (keys acc))
+        last-val (last (last acc))]
+    (if (keyword? b)
+      (assoc acc b [])
+      (->> b
+           (conj last-val)
+           (assoc acc last-key)))))
 
-(defn- try-chain
-  ([words]
-   (map #(try-chain words %) (map vector words)))
-  ([words chain]
-   (let [word (last chain)
-         others (filter #(not= word %) words)
-         links (filter #(one-diff? word %) others)
-         chains (map #(conj chain %) links)]
-     (if (seq links)
-       (->> (map #(try-chain others %) chains)
-            (sort #(> (count %1) (count %2)))
-            first)
-       chain))))
-
-(defn eighty-two? [words]
-  (some #(= (count words) (count %)) (try-chain words)))
-
-(defn eighty-five [s]
-  (apply clojure.set/union #{s} (map #(eighty-five (disj s %)) s)))
-
-(defn- happy [n]
-  (->> (seq (str n))
-    (map #(Integer. (str %)))
-    (map #(* % %))
-    (reduce +)))
-
-(defn eighty-six
-  [n]
-  (case n
-    1 true
-    2 false
-    3 false
-    (recur (happy n))))
-
-(defn one-hundred-five
-  [coll]
-  (into {}
-    (reduce
-      (fn [[now & done :as m] x]
-        (if (keyword? x)
-          (conj m [x []])
-          (conj
-            done
-            [(first now) (conj (last now) x)])))
-      (list)
-      coll)))
+; create map from keywords in vector
+(defn one-hundred-five [coll]
+  (reduce separate-keywords {} coll))
